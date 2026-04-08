@@ -59,7 +59,7 @@ export const Calendar: React.FC<CalendarProps> = ({ records, onDayClick }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-2">
         <div className="flex flex-col">
-          <h1 className="text-4xl font-black capitalize text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black capitalize text-slate-900 tracking-tight">
             {format(currentDate, 'MMMM', { locale: es })}
           </h1>
           <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">
@@ -104,44 +104,42 @@ export const Calendar: React.FC<CalendarProps> = ({ records, onDayClick }) => {
                 isToday && "ring-4 ring-menstruation/20 border-menstruation/50 border-2"
               )}
             >
-              {/* Fecha (Círculo Top-Left mejorado) */}
+              {/* Fecha (Top-Left Mini) */}
               <div className={cn(
-                "absolute top-1 left-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-black border-2 transition-all",
+                "absolute top-0 center w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black border transition-all",
                 isToday
                   ? "bg-menstruation border-white text-white shadow-lg shadow-menstruation/30"
-                  : "bg-slate-50 border-white text-slate-400 shadow-sm"
+                  : "bg-slate-50 border-white text-slate-300 shadow-sm"
               )}>
                 {format(day, 'd')}
               </div>
 
-              {/* Centro: Temperatura (Más grande) */}
+              {/* Centro: Temperatura (Mini) */}
               <div className="flex flex-col items-center justify-center -mt-1">
                 {(record?.basal_temp !== null && record?.basal_temp !== undefined) ? (
-                  <span className="text-m font-black text-slate-900 tracking-tighter">
+                  <span className="text-[10px] sm:text-xs font-black text-slate-900 tracking-tighter">
                     {Number(record.basal_temp).toFixed(2)}
-                    <span className="text-[15px] text-menstruation">°</span>
+                    <span className="text-[8px] text-menstruation ml-0.5">°</span>
                   </span>
                 ) : (
-                  <div className="w-2 h-2 bg-slate-100 rounded-full animate-pulse" />
+                  <div className="w-1 h-1 bg-slate-100 rounded-full" />
                 )}
               </div>
 
-              {/* Parte Inferior: Día del Ciclo */}
-              <div className="absolute bottom-3 left-0 right-0 flex flex-col items-center gap-1.5 px-3">
-                {record?.cycle_day && (
-                  <span className="text-[9px] font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-widest text-center w-fit">
-                    Día {record.cycle_day}
-                  </span>
-                )}
-
-                {/* Indicador de Flujo (Barra más gruesa) */}
-                <div className="w-full h-1.5 relative rounded-full overflow-hidden bg-slate-50">
-                  {statusColor ? (
+              {/* Parte Inferior: Día del Ciclo y Barra (Superpuestos) */}
+              <div className="absolute bottom-2 left-0 right-0 px-2 flex flex-col items-center">
+                <div className="w-full h-3 relative rounded-full overflow-hidden bg-slate-100/50 flex items-center justify-center">
+                  {statusColor && (
                     <div
-                      className="absolute inset-0 shadow-inner"
+                      className="absolute inset-0"
                       style={{ backgroundColor: statusColor }}
                     />
-                  ) : null}
+                  )}
+                  {record?.cycle_day && (
+                    <span className="relative z-10 text-[7px] font-black text-white uppercase tracking-tighter shadow-sm">
+                      D.{record.cycle_day}
+                    </span>
+                  )}
                 </div>
               </div>
 
