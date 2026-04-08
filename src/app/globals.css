@@ -1,26 +1,177 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFFFFF;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --menstruation: #FF5A5F;
+  --menstruation-soft: #FFF5F5;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+
+  /* Cycle Status Colors */
+  --status-menst: #FF5A5F;
+  --status-spotting: #FFB6C1;
+  --status-dry: #9E9E9E;
+  --status-mucus-el: #7FDBFF;
+  --status-mucus-es: #007BFF;
+  --status-post-peak: #A66CFF;
 }
 
-@theme inline {
+[data-theme='lilac'] {
+  --menstruation: #A66CFF;
+  --menstruation-soft: #F5F0FF;
+}
+
+[data-theme='white'] {
+  --background: #FFFFFF;
+  --card: #FFFFFF;
+  --menstruation: #000000;
+  --menstruation-soft: #F1F5F9;
+  --slate-900: #000000;
+}
+
+[data-theme='emerald'] {
+  --menstruation: #10B981;
+  --menstruation-soft: #ECFDF5;
+}
+
+[data-theme='ocean'] {
+  --menstruation: #0EA5E9;
+  --menstruation-soft: #F0F9FF;
+}
+
+[data-theme='amber'] {
+  --menstruation: #F59E0B;
+  --menstruation-soft: #FFFBEB;
+}
+
+[data-theme='rose'] {
+  --menstruation: #E11D48;
+  --menstruation-soft: #FFF1F2;
+}
+
+[data-theme='slate'] {
+  --menstruation: #64748B;
+  --menstruation-soft: #F8FAFC;
+}
+
+[data-theme='midnight'] {
+  --background: #0F172A;
+  --card: #1E293B;
+  --foreground: #F8FAFC;
+  --menstruation: #38BDF8;
+  --menstruation-soft: rgba(56, 189, 248, 0.1);
+  --slate-900: #FFFFFF;
+}
+
+[data-theme='dark'] {
+  --background: #12181F; 
+  --foreground: #F8FAFC;
+  --card: #1A2129; /* Darker card but not black */
+  --menstruation: #FF5A5F;
+  --menstruation-soft: rgba(255, 90, 95, 0.1);
+  /* Reverse slate scale for dark theme */
+  --slate-50: #1A2129;
+  --slate-100: #242D38;
+  --slate-200: #2F3B4A;
+  --slate-300: #455468;
+  --slate-400: #94A3B8;
+  --slate-500: #CBD5E1; 
+  --slate-600: #E2E8F0;
+  --slate-700: #F1F5F9;
+  --slate-800: #F8FAFC;
+  --slate-900: #FFFFFF;
+}
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-menstruation: var(--menstruation);
+  --color-menstruation-soft: var(--menstruation-soft);
+  
+  --color-menst: var(--status-menst);
+  --color-spotting: var(--status-spotting);
+  --color-dry: var(--status-dry);
+  --color-mucus-el: var(--status-mucus-el);
+  --color-mucus-es: var(--status-mucus-es);
+  --color-post-peak: var(--status-post-peak);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Full Slate mappings for maximum compatibility */
+  --color-slate-50: var(--slate-50);
+  --color-slate-100: var(--slate-100);
+  --color-slate-200: var(--slate-200);
+  --color-slate-300: var(--slate-300);
+  --color-slate-400: var(--slate-400);
+  --color-slate-500: var(--slate-500);
+  --color-slate-600: var(--slate-600);
+  --color-slate-700: var(--slate-700);
+  --color-slate-800: var(--slate-800);
+  --color-slate-900: var(--slate-900);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Base styles for buttons and inputs */
+input, select, textarea {
+  background-color: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--foreground);
+  transition: all 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #FF5A5F;
+  box-shadow: 0 0 0 2px rgba(255, 90, 95, 0.1);
+  background-color: #FFFFFF;
+}
+
+button {
+  transition: all 0.2s;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
