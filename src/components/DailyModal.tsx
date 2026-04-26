@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, Thermometer, Droplets, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
 import { DailyRecord, FlowType } from '@/types';
+import { calculateCycleDay, getCycleRecommendation, isTemperatureValid } from '@/utils/cycle';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -39,27 +40,23 @@ export const DailyModal: React.FC<DailyModalProps> = ({ isOpen, onClose, date, r
     notes: '',
   });
 
+  const [validationError, setValidationError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     if (record) {
       setFormData({
         basal_temp: record.basal_temp || 36.40,
         flow_type: record.flow_type || null,
-        cycle_day: record.cycle_day || null,
+        cycle_day: record.cycle_day || calculateCycleDay(date, allRecords),
         had_sex: !!record.had_sex,
         used_condom: !!record.used_condom,
         notes: record.notes || '',
       });
     } else {
-      // Intentar calcular el día del ciclo automáticamente basándose en el registro anterior
-      const prevDate = new Date(date);
-      prevDate.setDate(prevDate.getDate() - 1);
-      const prevDateStr = prevDate.toISOString().split('T')[0];
-      const prevRecord = allRecords.find(r => r.date.split('T')[0] === prevDateStr);
-
       setFormData({
         basal_temp: 36.40,
         flow_type: null,
-        cycle_day: prevRecord?.cycle_day ? prevRecord.cycle_day + 1 : null,
+        cycle_day: calculateCycleDay(date, allRecords),
         had_sex: false,
         used_condom: false,
         notes: '',
@@ -69,6 +66,14 @@ export const DailyModal: React.FC<DailyModalProps> = ({ isOpen, onClose, date, r
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError(null);
+
+    const tempCheck = isTemperatureValid(formData.basal_temp || null);
+    if (!tempCheck.valid) {
+      setValidationError(tempCheck.message || 'Temperatura inválida');
+      return;
+    }
+
     onSave(formData);
     onClose();
   };
@@ -105,6 +110,37 @@ export const DailyModal: React.FC<DailyModalProps> = ({ isOpen, onClose, date, r
               </button>
             </div>
 
+            {formData.cycle_day && (() => {
+              const rec = getCycleRecommendation(formData.cycle_day);
+              return (
+                <div 
+                  className="mb-8 p-6 rounded-3xl border flex items-start gap-4 transition-all duration-500"
+                  style={{ 
+                    backgroundColor: `${rec.color}08`,
+                    borderColor: `${rec.color}25`
+                  }}
+                >
+                  <div 
+                    className="p-2 rounded-xl text-white shadow-sm"
+                    style={{ backgroundColor: rec.color }}
+                  >
+                    <CalendarIcon size={18} />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span 
+                      className="text-[9px] font-black uppercase tracking-widest"
+                      style={{ color: rec.color }}
+                    >
+                      {rec.phase} (Día {formData.cycle_day})
+                    </span>
+                    <p className="text-slate-800 text-xs font-bold leading-relaxed">
+                      {rec.recommendation}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Temperatura y Día de Ciclo */}
               <div className="grid grid-cols-2 gap-4">
@@ -119,9 +155,17 @@ export const DailyModal: React.FC<DailyModalProps> = ({ isOpen, onClose, date, r
                       placeholder="36.40"
                       value={formData.basal_temp || ''}
                       onChange={(e) => setFormData({ ...formData, basal_temp: parseFloat(e.target.value) || null })}
-                      className="w-full bg-slate-50 border-transparent text-xl font-black py-5 pl-6 focus:bg-card focus:border-menstruation/20 transition-all text-slate-900"
+                      className={cn(
+                        "w-full bg-slate-50 border-2 text-xl font-black py-5 pl-6 outline-none transition-all text-slate-900 rounded-[24px]",
+                        validationError ? "border-red-500/50 bg-red-50/50" : "border-transparent focus:bg-card focus:border-menstruation/20"
+                      )}
                     />
                   </div>
+                  {validationError && (
+                    <p className="text-[10px] font-black text-red-500 uppercase tracking-tight animate-in fade-in slide-in-from-top-1">
+                      {validationError}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-3">

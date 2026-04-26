@@ -17,6 +17,7 @@ import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { DailyRecord } from '@/types';
 import { getStatusColor } from '@/utils/calendar';
+import { calculateCycleDay } from '@/utils/cycle';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -91,6 +92,7 @@ export const Calendar: React.FC<CalendarProps> = ({ records, onDayClick }) => {
           const record = getRecordForDay(day);
           const isCurrentMonth = isSameMonth(day, monthStart);
           const isToday = isSameDay(day, new Date());
+          const cycleDay = calculateCycleDay(day, records);
           const statusColor = record ? getStatusColor(record.flow_type) : null;
 
           return (
@@ -135,9 +137,9 @@ export const Calendar: React.FC<CalendarProps> = ({ records, onDayClick }) => {
                       style={{ backgroundColor: statusColor }}
                     />
                   )}
-                  {record?.cycle_day && (
+                  {cycleDay && (
                     <span className="relative z-10 text-[7px] font-black text-white uppercase tracking-tighter shadow-sm">
-                      D.{record.cycle_day}
+                      D.{cycleDay}
                     </span>
                   )}
                 </div>

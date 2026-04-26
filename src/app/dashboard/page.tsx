@@ -9,6 +9,7 @@ import { DailyRecord, ApiResponse } from '@/types';
 import { format } from 'date-fns';
 import { LogOut, BarChart2, Calendar as CalendarIcon, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { CycleStatus } from '@/components/CycleStatus';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -36,6 +37,14 @@ export default function Dashboard() {
     const record = records.find(r => r.date.split('T')[0] === format(date, 'yyyy-MM-dd'));
     setSelectedDate(date);
     setSelectedRecord(record || null);
+    setIsModalOpen(true);
+  };
+
+  const handleStartNewCycle = () => {
+    const today = new Date();
+    const record = records.find(r => r.date.split('T')[0] === format(today, 'yyyy-MM-dd'));
+    setSelectedDate(today);
+    setSelectedRecord(record || { flow_type: 'menstruation' as any });
     setIsModalOpen(true);
   };
 
@@ -70,6 +79,11 @@ export default function Dashboard() {
         <button onClick={logout} className="p-3 bg-card border border-slate-100 rounded-xl text-slate-400 hover:text-slate-900 shadow-sm transition-all">
           <LogOut size={20} />
         </button>
+      </div>
+
+      {/* Cycle Status Card */}
+      <div className="px-2 mb-8">
+        <CycleStatus records={records} onStartNewCycle={handleStartNewCycle} />
       </div>
 
       {/* Calendar Area */}
