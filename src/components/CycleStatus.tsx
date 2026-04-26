@@ -10,7 +10,7 @@ interface CycleStatusProps {
   onStartNewCycle?: () => void;
 }
 
-export const CycleStatus: React.FC<CycleStatusProps> = ({ records }) => {
+export const CycleStatus: React.FC<CycleStatusProps> = ({ records, onStartNewCycle }) => {
   const today = new Date();
   const cycleDay = calculateCycleDay(today, records);
 
