@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const { data, error, mutate } = useSWR('/auth/me', async (url) => {
+  const { data, error, mutate } = useSWR('/auth/me', async (url: string) => {
     const response = await api.get<ApiResponse<{ user: User }>>(url);
     return response.data;
   }, {

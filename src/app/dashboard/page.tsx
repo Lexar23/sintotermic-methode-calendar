@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Partial<DailyRecord> | null>(null);
 
-  const { data: recordsData, mutate: mutateRecords } = useSWR('/records', async (url) => {
+  const { data: recordsData, mutate: mutateRecords } = useSWR('/records', async (url: string) => {
     const response = await api.get<ApiResponse<{ records: DailyRecord[] }>>(url);
     return response.data.success ? response.data.data!.records : [];
   }, {

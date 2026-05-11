@@ -34,7 +34,7 @@ export default function ChartPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { data: responseData, isValidating: swrLoading } = useSWR(`/records/chart?months=${filter}`, async (url) => {
+  const { data: responseData, isValidating: swrLoading } = useSWR(`/records/chart?months=${filter}`, async (url: string) => {
     const response = await api.get<ApiResponse<{ chart: any[] }>>(url);
     return response.data;
   }, {
