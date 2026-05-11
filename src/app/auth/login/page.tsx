@@ -38,27 +38,36 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative group">
-            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
+          <div className="relative group flex items-center">
+            <Mail className="text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
             <input
               type="email"
               placeholder="Correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-14 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
+              className="w-full pl-4 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
               required
             />
           </div>
-          <div className="relative group">
-            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
+          <div className="relative group flex items-center">
+            <Lock className="text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
             <input
               type="password"
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-14 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
+              className="w-full pl-4 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
               required
             />
+          </div>
+          
+          <div className="flex justify-end px-2">
+            <Link 
+              href="/auth/forgot-password" 
+              className="text-sm font-bold text-slate-400 hover:text-menstruation transition-colors"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           {error && <p className="text-red-500 text-sm text-center font-semibold bg-red-50 p-3 rounded-xl border border-red-100">{error}</p>}

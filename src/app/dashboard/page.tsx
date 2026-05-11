@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { useAuth } from '@/context/AuthContext';
 import { Calendar } from '@/components/Calendar';
 import { DailyModal } from '@/components/DailyModal';
@@ -13,25 +14,20 @@ import { CycleStatus } from '@/components/CycleStatus';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
-  const [records, setRecords] = useState<DailyRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Partial<DailyRecord> | null>(null);
 
-  const fetchRecords = async () => {
-    try {
-      const response = await api.get<ApiResponse<{ records: DailyRecord[] }>>('/records');
-      if (response.data.success) {
-        setRecords(response.data.data!.records);
-      }
-    } catch (error) {
-      console.error('Error fetching records:', error);
-    }
-  };
+  const { data: recordsData, mutate: mutateRecords } = useSWR('/records', async (url) => {
+    const response = await api.get<ApiResponse<{ records: DailyRecord[] }>>(url);
+    return response.data.success ? response.data.data!.records : [];
+  }, {
+    revalidateOnFocus: true, // Re-fetches automatically when returning to the tab!
+  });
 
-  useEffect(() => {
-    fetchRecords();
-  }, []);
+  // Keep records state in sync or just use recordsData directly. For simplicity we'll just derive it.
+  const records = recordsData || [];
+
 
   const handleDayClick = (date: Date) => {
     const record = records.find(r => r.date.split('T')[0] === format(date, 'yyyy-MM-dd'));
@@ -57,7 +53,7 @@ export default function Dashboard() {
         ...data,
         date: dateStr,
       });
-      fetchRecords(); // Refresh data
+      mutateRecords(); // Refresh data using SWR
     } catch (error) {
       console.error('Error saving record:', error);
     }

@@ -7,8 +7,7 @@ export function middleware(request: NextRequest) {
 
   // Rutas públicas que no requieren autenticación
   const isPublicPath = 
-    pathname === '/auth/login' || 
-    pathname === '/auth/register' ||
+    pathname.startsWith('/auth/') || 
     pathname.startsWith('/api/auth');
 
   // Si el usuario NO tiene token y está intentando acceder a una ruta privada
@@ -16,8 +15,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
-  // Si el usuario TIENE token y está intentando acceder a login/register
-  if (token && (pathname === '/auth/login' || pathname === '/auth/register')) {
+  // Si el usuario TIENE token y está intentando acceder a cualquier ruta de auth
+  if (token && pathname.startsWith('/auth/')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

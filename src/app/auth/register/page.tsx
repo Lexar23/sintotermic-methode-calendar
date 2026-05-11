@@ -36,36 +36,36 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative group">
-            <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
+          <div className="relative group flex items-center">
+            <UserIcon className="text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
             <input
               type="text"
               placeholder="Nombre completo"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full pl-14 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
+              className="w-full pl-4 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
               required
             />
           </div>
-          <div className="relative group">
-            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
+          <div className="relative group flex items-center">
+            <Mail className="text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
             <input
               type="email"
               placeholder="Correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-14 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
+              className="w-full pl-4 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
               required
             />
           </div>
-          <div className="relative group">
-            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
+          <div className="relative group flex items-center">
+            <Lock className="text-slate-400 group-focus-within:text-menstruation transition-colors" size={20} />
             <input
               type="password"
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-14 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
+              className="w-full pl-4 pr-4 py-5 bg-slate-50 border-slate-100 text-slate-900 rounded-[24px] focus:bg-white focus:border-menstruation/30 transition-all outline-none font-medium"
               required
             />
           </div>

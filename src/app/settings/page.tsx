@@ -23,6 +23,7 @@ import {
 import Link from 'next/link';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Shield } from 'lucide-react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -55,6 +56,42 @@ export default function SettingsPage() {
       console.error('Error updating profile:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Las contraseñas no coinciden');
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPasswordError('La nueva contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+
+    setPasswordSaving(true);
+    setPasswordError('');
+    setPasswordSuccess(false);
+    
+    try {
+      await api.post('/auth/change-password', { currentPassword, newPassword });
+      setPasswordSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch (error: any) {
+      setPasswordError(error.response?.data?.error || 'Error al cambiar la contraseña');
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -126,6 +163,67 @@ export default function SettingsPage() {
             >
               {saving ? <Loader2 className="animate-spin" size={18} /> : success ? <Check size={18} /> : <Save size={18} />}
               {saving ? 'Guardando...' : success ? 'Actualizado' : 'Guardar Cambios'}
+            </button>
+          </form>
+        </section>
+
+        {/* Seguridad */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 px-2">
+            <Shield size={18} className="text-menstruation" />
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest">Seguridad</h2>
+          </div>
+          
+          <form onSubmit={handleChangePassword} className="bg-card rounded-[40px] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-300 uppercase tracking-widest ml-1">Contraseña Actual</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full bg-slate-50 border-transparent py-4 px-6 rounded-2xl text-slate-900 font-bold focus:bg-white focus:border-menstruation/20 transition-all outline-none"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-300 uppercase tracking-widest ml-1">Nueva Contraseña</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full bg-slate-50 border-transparent py-4 px-6 rounded-2xl text-slate-900 font-bold focus:bg-white focus:border-menstruation/20 transition-all outline-none"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-300 uppercase tracking-widest ml-1">Confirmar Nueva Contraseña</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-slate-50 border-transparent py-4 px-6 rounded-2xl text-slate-900 font-bold focus:bg-white focus:border-menstruation/20 transition-all outline-none"
+                required
+              />
+            </div>
+
+            {passwordError && (
+              <p className="text-red-500 text-xs font-bold text-center bg-red-50 p-3 rounded-xl border border-red-100">
+                {passwordError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={passwordSaving}
+              className={cn(
+                "w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all",
+                passwordSuccess ? "bg-green-500 text-white" : "bg-slate-900 text-white hover:bg-slate-800"
+              )}
+            >
+              {passwordSaving ? <Loader2 className="animate-spin" size={18} /> : passwordSuccess ? <Check size={18} /> : <Save size={18} />}
+              {passwordSaving ? 'Cambiando...' : passwordSuccess ? 'Contraseña Cambiada' : 'Cambiar Contraseña'}
             </button>
           </form>
         </section>

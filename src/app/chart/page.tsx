@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
 import { DailyRecord, ApiResponse } from '@/types';
@@ -33,33 +34,34 @@ export default function ChartPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchChartData = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get<ApiResponse<{ chart: any[] }>>(`/records/chart?months=${filter}`);
-        if (response.data.success) {
-          const formatted = response.data.data!.chart.map(r => {
-            const dateStr = typeof r.date === 'string' ? r.date.split('T')[0] : format(new Date(r.date), 'yyyy-MM-dd');
-            const validDate = new Date(dateStr + 'T12:00:00');
+  const { data: responseData, isValidating: swrLoading } = useSWR(`/records/chart?months=${filter}`, async (url) => {
+    const response = await api.get<ApiResponse<{ chart: any[] }>>(url);
+    return response.data;
+  }, {
+    revalidateOnFocus: true,
+  });
 
-            return {
-              ...r,
-              displayDate: format(validDate, 'd MMM', { locale: es }),
-              temp: parseFloat(r.basal_temp),
-              color: getStatusColor(r.flow_type)
-            };
-          });
-          setData(formatted);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchChartData();
-  }, [filter]);
+  useEffect(() => {
+    if (responseData?.success) {
+      const formatted = responseData.data!.chart.map(r => {
+        const dateStr = typeof r.date === 'string' ? r.date.split('T')[0] : format(new Date(r.date), 'yyyy-MM-dd');
+        const validDate = new Date(dateStr + 'T12:00:00');
+
+        return {
+          ...r,
+          displayDate: format(validDate, 'd MMM', { locale: es }),
+          temp: parseFloat(r.basal_temp),
+          color: getStatusColor(r.flow_type)
+        };
+      });
+      setData(formatted);
+    }
+  }, [responseData]);
+
+  useEffect(() => {
+    setLoading(swrLoading && !data.length);
+  }, [swrLoading, data.length]);
+
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {

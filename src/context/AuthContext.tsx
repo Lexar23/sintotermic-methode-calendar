@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import api from '@/services/api';
 import { User, ApiResponse } from '@/types';
@@ -20,22 +21,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const checkAuth = async () => {
-    try {
-      const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
-      if (response.data.success) {
-        setUser(response.data.data!.user);
-      }
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, error, mutate } = useSWR('/auth/me', async (url) => {
+    const response = await api.get<ApiResponse<{ user: User }>>(url);
+    return response.data;
+  }, {
+    revalidateOnFocus: false, // You can configure this as needed
+    shouldRetryOnError: false
+  });
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (data?.success && data.data?.user) {
+      setUser(data.data.user);
+      setLoading(false);
+    } else if (error || (data && !data.success)) {
+      setUser(null);
+      setLoading(false);
+    }
+  }, [data, error]);
 
   const login = async (email: string, password: string) => {
     const response = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/login', {
